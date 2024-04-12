@@ -1,68 +1,61 @@
-const OtherIngredients = require('../models/otherIngredients');
+const Pizza = require('../models/pizza');
 
-// Function to create a new other ingredient
-exports.createOtherIngredient = async (req, res) => {
+// Create a new pizza
+exports.createPizza = async (req, res) => {
     try {
-        const { otherIngredientName, otherIngredientQuantite } = req.body;
-        const newOtherIngredient = new OtherIngredients({ otherIngredientName, otherIngredientQuantite });
-        await newOtherIngredient.save();
-        res.status(201).json({ message: 'New other ingredient created successfully', data: newOtherIngredient });
+        const pizza = new Pizza(req.body);
+        await pizza.save();
+        res.status(201).json({ success: true, pizza });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
-// Function to get all other ingredients
-exports.getAllOtherIngredients = async (req, res) => {
+// Get all pizzas
+exports.getAllPizzas = async (req, res) => {
     try {
-        const otherIngredients = await OtherIngredients.find();
-        res.status(200).json(otherIngredients);
+        const pizzas = await Pizza.find();
+        res.status(200).json({ success: true, pizzas });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
-// Function to get an other ingredient by its ID
-exports.getOtherIngredientById = async (req, res) => {
+// Get a single pizza by ID
+exports.getPizzaById = async (req, res) => {
     try {
-        const otherIngredient = await OtherIngredients.findById(req.params.id);
-        if (!otherIngredient) {
-            return res.status(404).json({ message: 'Other ingredient not found' });
+        const pizza = await Pizza.findById(req.params.id);
+        if (!pizza) {
+            return res.status(404).json({ success: false, message: 'Pizza not found' });
         }
-        res.status(200).json(otherIngredient);
+        res.status(200).json({ success: true, pizza });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
-// Function to update an other ingredient
-exports.updateOtherIngredient = async (req, res) => {
+// Update a pizza by ID
+exports.updatePizza = async (req, res) => {
     try {
-        const { otherIngredientName, otherIngredientQuantite } = req.body;
-        const updatedOtherIngredient = await OtherIngredients.findByIdAndUpdate(req.params.id, { otherIngredientName, otherIngredientQuantite }, { new: true });
-        if (!updatedOtherIngredient) {
-            return res.status(404).json({ message: 'Other ingredient not found' });
+        const pizza = await Pizza.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!pizza) {
+            return res.status(404).json({ success: false, message: 'Pizza not found' });
         }
-        res.status(200).json({ message: 'Other ingredient updated successfully', data: updatedOtherIngredient });
+        res.status(200).json({ success: true, pizza });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
-// Function to delete an other ingredient
-exports.deleteOtherIngredient = async (req, res) => {
+// Delete a pizza by ID
+exports.deletePizza = async (req, res) => {
     try {
-        const deletedOtherIngredient = await OtherIngredients.findByIdAndDelete(req.params.id);
-        if (!deletedOtherIngredient) {
-            return res.status(404).json({ message: 'Other ingredient not found' });
+        const pizza = await Pizza.findByIdAndDelete(req.params.id);
+        if (!pizza) {
+            return res.status(404).json({ success: false, message: 'Pizza not found' });
         }
-        res.status(200).json({ message: 'Other ingredient deleted successfully', data: deletedOtherIngredient });
+        res.status(200).json({ success: true, message: 'Pizza deleted successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
