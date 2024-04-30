@@ -1,7 +1,7 @@
 import React from 'react';
 import Sidebar from './sidebar';
 
-const Commande = () => {
+const Pizza = () => {
     return (
         <div>
         <Sidebar/>
@@ -70,4 +70,4 @@ const Commande = () => {
     );
 }
 
-export default Commande;
+export default Pizza;

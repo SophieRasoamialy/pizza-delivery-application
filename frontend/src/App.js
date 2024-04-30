@@ -4,6 +4,8 @@ import LoginPage from './components/auth/loginPage';
 import RegisterPage from './components/auth/register';
 import Home from './components/home';
 import CustomPizza from './components/page/customPizza';
+import Commande from './components/admin/commande';
+import Pizza from './components/admin/pizza';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} /> 
           <Route path="/register" element={<RegisterPage />} /> 
           <Route path="/customPizza" element={<CustomPizza />} /> 
+          <Route path="/admin/commande" element={<Commande />} /> 
+          <Route path="/admin/pizza" element={<Commande />} /> 
         </Routes>
       </div>
     </Router>
