@@ -6,6 +6,7 @@ import Home from './components/home';
 import CustomPizza from './components/page/customPizza';
 import Commande from './components/admin/commande';
 import Pizza from './components/admin/pizza';
+import Ingredients from './components/admin/ingredients';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/customPizza" element={<CustomPizza />} /> 
           <Route path="/admin/commande" element={<Commande />} /> 
           <Route path="/admin/pizza" element={<Pizza />} /> 
+          <Route path="/admin/ingredients" element={<Ingredients />} />
         </Routes>
       </div>
     </Router>
