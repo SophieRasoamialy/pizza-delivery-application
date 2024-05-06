@@ -8,6 +8,9 @@ const veggiesSchema = new mongoose.Schema({
     veggiesQuantite: {
         type: Number,
         default: 0
+    },
+    veggiesNameImage: {
+        type: String 
     }
 });
 

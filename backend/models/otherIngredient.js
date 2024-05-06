@@ -8,6 +8,9 @@ const otherIngredientsSchema = new mongoose.Schema({
     otherIngredientQuantite: {
         type: Number,
         default: 0
+    },
+    otherIngredientImage: {
+        type: String 
     }
 });
 

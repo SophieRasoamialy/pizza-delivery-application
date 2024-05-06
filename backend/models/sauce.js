@@ -8,6 +8,9 @@ const sauceSchema = new mongoose.Schema({
     sauceQuantite: {
         type: Number,
         default: 0
+    },
+    sauceImage: {
+        type: String 
     }
 });
 

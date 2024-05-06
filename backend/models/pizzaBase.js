@@ -8,6 +8,9 @@ const pizzaBaseSchema = new mongoose.Schema({
     pizzaBaseQuantite: {
         type: Number,
         default: 0
+    },
+    pizzaBaseImage: {
+        type: String 
     }
 });
 

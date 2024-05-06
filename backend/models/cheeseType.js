@@ -8,6 +8,9 @@ const cheeseTypeSchema = new mongoose.Schema({
     cheeseTypeQuantite: {
         type: Number,
         default: 0
+    },
+    cheeseImage: {
+        type: String 
     }
 });
 
