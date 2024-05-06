@@ -17,7 +17,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} /> 
           <Route path="/customPizza" element={<CustomPizza />} /> 
           <Route path="/admin/commande" element={<Commande />} /> 
-          <Route path="/admin/pizza" element={<Commande />} /> 
+          <Route path="/admin/pizza" element={<Pizza />} /> 
         </Routes>
       </div>
     </Router>
