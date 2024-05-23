@@ -1,105 +1,104 @@
-const Sauce = require('../models/sauce');
+const Sauce = require('../models/Sauce'); // Assuming Sauce model is in the models directory
+const multer = require('multer');
+const path = require('path');
 
-// Function to create a new sauce
-exports.createSauce = async (req, res) => {
-    try {
-        const { sauceName, sauceQuantite } = req.body;
-        const newSauce = new Sauce({ sauceName, sauceQuantite });
-        await newSauce.save();
-        res.status(201).json({ message: 'New sauce created successfully', data: newSauce });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+// Set up multer for file handling
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Specify the destination directory for uploaded images
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Generate a unique filename
     }
-};
+});
+const upload = multer({ storage: storage });
 
-// Function to get all sauces
-exports.getAllSauces = async (req, res) => {
+// Controller functions
+const getSauces = async (req, res) => {
     try {
         const sauces = await Sauce.find();
-        res.status(200).json(sauces);
+        res.json(sauces);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error fetching sauces:', error);
+        res.status(500).json({ message: 'Error fetching sauces' });
     }
 };
 
-// Function to get a sauce by its ID
-exports.getSauceById = async (req, res) => {
+const getSauceById = async (req, res) => {
     try {
         const sauce = await Sauce.findById(req.params.id);
         if (!sauce) {
             return res.status(404).json({ message: 'Sauce not found' });
         }
-        res.status(200).json(sauce);
+        res.json(sauce);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error fetching sauce:', error);
+        res.status(500).json({ message: 'Error fetching sauce' });
     }
 };
 
-// Function to update a sauce
-exports.updateSauce = async (req, res) => {
+const createSauce = async (req, res) => {
     try {
         const { sauceName, sauceQuantite } = req.body;
-        const updatedSauce = await Sauce.findByIdAndUpdate(req.params.id, { sauceName, sauceQuantite }, { new: true });
+        const sauceImage = req.file ? `/uploads/${req.file.filename}` : null;
+
+        const newSauce = new Sauce({
+            sauceName,
+            sauceQuantite,
+            sauceImage
+        });
+
+        await newSauce.save();
+        res.status(201).json(newSauce);
+    } catch (error) {
+        console.error('Error creating sauce:', error);
+        res.status(500).json({ message: 'Error creating sauce' });
+    }
+};
+
+const updateSauce = async (req, res) => {
+    try {
+        const { sauceName, sauceQuantite } = req.body;
+        const sauceImage = req.file ? `/uploads/${req.file.filename}` : req.body.sauceImage;
+
+        const updatedSauce = await Sauce.findByIdAndUpdate(
+            req.params.id,
+            { sauceName, sauceQuantite, sauceImage },
+            { new: true }
+        );
+
         if (!updatedSauce) {
             return res.status(404).json({ message: 'Sauce not found' });
         }
-        res.status(200).json({ message: 'Sauce updated successfully', data: updatedSauce });
+
+        res.json(updatedSauce);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error updating sauce:', error);
+        res.status(500).json({ message: 'Error updating sauce' });
     }
 };
 
-// Function to delete a sauce
-exports.deleteSauce = async (req, res) => {
+const deleteSauce = async (req, res) => {
     try {
         const deletedSauce = await Sauce.findByIdAndDelete(req.params.id);
+
         if (!deletedSauce) {
             return res.status(404).json({ message: 'Sauce not found' });
         }
-        res.status(200).json({ message: 'Sauce deleted successfully', data: deletedSauce });
+
+        res.json({ message: 'Sauce deleted successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error deleting sauce:', error);
+        res.status(500).json({ message: 'Error deleting sauce' });
     }
 };
 
-// Function to increase the quantity of a sauce
-exports.increaseSauceQuantity = async (req, res) => {
-    try {
-        const { quantity } = req.body;
-        const sauce = await Sauce.findById(req.params.id);
-        if (!sauce) {
-            return res.status(404).json({ message: 'Sauce not found' });
-        }
-        sauce.sauceQuantite += quantity;
-        await sauce.save();
-        res.status(200).json({ message: 'Sauce quantity increased successfully', data: sauce });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
-// Function to decrease the quantity of a sauce
-exports.decreaseSauceQuantity = async (req, res) => {
-    try {
-        const { quantity } = req.body;
-        const sauce = await Sauce.findById(req.params.id);
-        if (!sauce) {
-            return res.status(404).json({ message: 'Sauce not found' });
-        }
-        if (sauce.sauceQuantite < quantity) {
-            return res.status(400).json({ message: 'Insufficient quantity' });
-        }
-        sauce.sauceQuantite -= quantity;
-        await sauce.save();
-        res.status(200).json({ message: 'Sauce quantity decreased successfully', data: sauce });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+// Export controller functions
+module.exports = {
+    getSauces,
+    getSauceById,
+    createSauce,
+    updateSauce,
+    deleteSauce,
+    upload // Export the multer upload middleware for use in routes
 };
