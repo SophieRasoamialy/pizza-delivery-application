@@ -1,17 +1,32 @@
 const PizzaBase = require('../models/pizzaBase');
+const multer = require('multer');
+const path = require('path');
 
-// Function to create a new pizza base
 exports.createPizzaBase = async (req, res) => {
     try {
-        const { pizzaBaseName, pizzaBaseQuantite } = req.body;
-        const newPizzaBase = new PizzaBase({ pizzaBaseName, pizzaBaseQuantite });
-        await newPizzaBase.save();
-        res.status(201).json({ message: 'New pizza base created successfully', data: newPizzaBase });
+      const { pizzaBaseName, pizzaBaseQuantite } = req.body;
+      const file = req.file; // Uploaded file from multer
+  
+      if (!file) {
+        return res.status(400).json({ message: 'No image uploaded' });
+      }
+  
+      // Create a new pizza base instance
+      const newPizzaBase = new PizzaBase({
+        pizzaBaseName,
+        pizzaBaseQuantite,
+        pizzaBaseImage: `/${file.path}`, // Save file path relative to the server
+      });
+  
+      // Save the new pizza base to the database
+      const savedPizzaBase = await newPizzaBase.save();
+  
+      res.status(201).json(savedPizzaBase);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+      console.error(error);
+      res.status(500).json({ message: 'Error creating pizza base' });
     }
-};
+  };
 
 // Function to get all pizza bases
 exports.getAllPizzaBases = async (req, res) => {
@@ -42,10 +57,23 @@ exports.getPizzaBaseById = async (req, res) => {
 exports.updatePizzaBase = async (req, res) => {
     try {
         const { pizzaBaseName, pizzaBaseQuantite } = req.body;
-        const updatedPizzaBase = await PizzaBase.findByIdAndUpdate(req.params.id, { pizzaBaseName, pizzaBaseQuantite }, { new: true });
+        const file = req.file; // Uploaded file from multer
+
+        const updateData = {
+            pizzaBaseName,
+            pizzaBaseQuantite,
+        };
+
+        if (file) {
+            updateData.pizzaBaseImage = `/${file.path}`; // Save file path relative to the server
+        }
+
+        const updatedPizzaBase = await PizzaBase.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
         if (!updatedPizzaBase) {
             return res.status(404).json({ message: 'Pizza base not found' });
         }
+
         res.status(200).json({ message: 'Pizza base updated successfully', data: updatedPizzaBase });
     } catch (error) {
         console.error(error);
