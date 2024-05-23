@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
 const pizzaBaseRoutes = require('./routes/pizzaBaseRoutes');
+const veggiesRoutes = require('./routes/veggiesRoutes');
 const path = require('path');
 
 require('dotenv').config();
@@ -18,6 +19,7 @@ mongoose.connect('mongodb://localhost:27017/pizzaAppDB', )
 
 app.use('/api/auth', userRoutes);
 app.use('/api/pizzabases',pizzaBaseRoutes);
+app.use('/api/veggies',veggiesRoutes); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
