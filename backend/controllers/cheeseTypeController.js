@@ -1,15 +1,29 @@
 const CheeseType = require('../models/cheeseType');
 
-// Function to create a new cheese type
+// Create a new cheese type
 exports.createCheeseType = async (req, res) => {
     try {
         const { cheeseTypeName, cheeseTypeQuantite } = req.body;
-        const newCheeseType = new CheeseType({ cheeseTypeName, cheeseTypeQuantite });
-        await newCheeseType.save();
-        res.status(201).json({ message: 'New cheese type created successfully', data: newCheeseType });
+        const file = req.file; // Uploaded file from multer
+
+        if (!file) {
+            return res.status(400).json({ message: 'No image uploaded' });
+        }
+
+        // Create a new cheese type instance
+        const newCheeseType = new CheeseType({
+            cheeseTypeName,
+            cheeseTypeQuantite,
+            cheeseImage: `/${file.path}`, // Save file path relative to the server
+        });
+
+        // Save the new cheese type to the database
+        const savedCheeseType = await newCheeseType.save();
+
+        res.status(201).json(savedCheeseType);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Error creating cheese type' });
     }
 };
 
@@ -42,10 +56,23 @@ exports.getCheeseTypeById = async (req, res) => {
 exports.updateCheeseType = async (req, res) => {
     try {
         const { cheeseTypeName, cheeseTypeQuantite } = req.body;
-        const updatedCheeseType = await CheeseType.findByIdAndUpdate(req.params.id, { cheeseTypeName, cheeseTypeQuantite }, { new: true });
+        const file = req.file; // Uploaded file from multer
+
+        const updateData = {
+            cheeseTypeName,
+            cheeseTypeQuantite,
+        };
+
+        if (file) {
+            updateData.cheeseImage = `/${file.path}`; // Save file path relative to the server
+        }
+
+        const updatedCheeseType = await CheeseType.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
         if (!updatedCheeseType) {
             return res.status(404).json({ message: 'Cheese type not found' });
         }
+
         res.status(200).json({ message: 'Cheese type updated successfully', data: updatedCheeseType });
     } catch (error) {
         console.error(error);
@@ -61,43 +88,6 @@ exports.deleteCheeseType = async (req, res) => {
             return res.status(404).json({ message: 'Cheese type not found' });
         }
         res.status(200).json({ message: 'Cheese type deleted successfully', data: deletedCheeseType });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
-// Function to increase the quantity of a cheese type
-exports.increaseCheeseTypeQuantity = async (req, res) => {
-    try {
-        const { quantity } = req.body;
-        const cheeseType = await CheeseType.findById(req.params.id);
-        if (!cheeseType) {
-            return res.status(404).json({ message: 'Cheese type not found' });
-        }
-        cheeseType.cheeseTypeQuantite += quantity;
-        await cheeseType.save();
-        res.status(200).json({ message: 'Cheese type quantity increased successfully', data: cheeseType });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
-// Function to decrease the quantity of a cheese type
-exports.decreaseCheeseTypeQuantity = async (req, res) => {
-    try {
-        const { quantity } = req.body;
-        const cheeseType = await CheeseType.findById(req.params.id);
-        if (!cheeseType) {
-            return res.status(404).json({ message: 'Cheese type not found' });
-        }
-        if (cheeseType.cheeseTypeQuantite < quantity) {
-            return res.status(400).json({ message: 'Insufficient quantity' });
-        }
-        cheeseType.cheeseTypeQuantite -= quantity;
-        await cheeseType.save();
-        res.status(200).json({ message: 'Cheese type quantity decreased successfully', data: cheeseType });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

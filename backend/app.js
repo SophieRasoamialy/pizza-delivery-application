@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
 const pizzaBaseRoutes = require('./routes/pizzaBaseRoutes');
 const veggiesRoutes = require('./routes/veggiesRoutes');
+const cheeseTypeRoutes = require('./routes/cheeseTypeRoutes');
 const sauceRoutes = require('./routes/sauceRoutes');
 const path = require('path');
 
@@ -22,6 +23,7 @@ app.use('/api/auth', userRoutes);
 app.use('/api/pizzabases',pizzaBaseRoutes);
 app.use('/api/veggies',veggiesRoutes); 
 app.use('/api/sauces',sauceRoutes);
+app.use('/api/cheeseTypes',cheeseTypeRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
